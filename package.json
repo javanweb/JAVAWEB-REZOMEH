@@ -1,0 +1,11 @@
+{
+  "name": "javan-webi-frontend",
+  "version": "1.0.0",
+  "description": "A fully client-side application for Javan Webi. Data is persisted in LocalStorage.",
+  "main": "index.html",
+  "scripts": {},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {}
+}
