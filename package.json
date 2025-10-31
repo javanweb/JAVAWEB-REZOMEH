@@ -2,7 +2,7 @@
   "name": "javan-webi-frontend",
   "version": "1.0.0",
   "private": true,
-  "description": "A fully client-side application for Javan Webi. Data is persisted in LocalStorage.",
+  "description": "A fully client-side application for Javan Webi. Data is persisted in the browser's LocalStorage to enable deployment on static hosts like Netlify. The server has been removed.",
   "main": "index.html",
   "scripts": {
     "dev": "vite",
