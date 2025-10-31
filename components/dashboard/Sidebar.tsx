@@ -30,6 +30,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView, setActiveView, setView, i
   const handleLogout = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('currentUser');
     setView('homepage');
   };
 

@@ -1,3 +1,0 @@
-{
-  "_comment": "This file is not used. It is a remnant of a deprecated server setup. The application is now fully client-side and uses localStorage for data persistence."
-}

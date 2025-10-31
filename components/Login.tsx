@@ -8,28 +8,40 @@ interface LoginProps {
 }
 
 const Login: React.FC<LoginProps> = ({ onLoginSuccess, onBack, onGoToRegister }) => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [mobile, setMobile] = useState('');
+  const [nationalId, setNationalId] = useState('');
   const [error, setError] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
-    if (!username.trim()) {
-      setError('نام کاربری نمی‌تواند خالی باشد.');
+    if (!mobile.trim()) {
+      setError('شماره موبایل نمی‌تواند خالی باشد.');
       return;
     }
 
-    if (!password) {
-      setError('رمز عبور نمی‌تواند خالی باشد.');
+    if (!nationalId) {
+      setError('کد ملی نمی‌تواند خالی باشد.');
       return;
     }
 
-    // This is a mock login. In a real application, you'd verify credentials against a server.
-    // For now, any valid input is considered a successful login.
-    console.log(`Attempting login with Username: ${username}`);
-    onLoginSuccess();
+    const usersJSON = localStorage.getItem('users');
+    const users = usersJSON ? JSON.parse(usersJSON) : [];
+
+    const user = users.find((u: any) => u.mobile === mobile && u.password === nationalId);
+
+    if (user) {
+        console.log(`Login successful for ${user.firstName}`);
+        localStorage.setItem('currentUser', JSON.stringify({
+            mobile: user.mobile,
+            firstName: user.firstName,
+            lastName: user.lastName
+        }));
+        onLoginSuccess();
+    } else {
+        setError('کاربری با این مشخصات یافت نشد یا رمز عبور اشتباه است.');
+    }
   };
 
   return (
@@ -48,38 +60,38 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess, onBack, onGoToRegister })
             ورود به حساب کاربری
           </h2>
           <p className="mt-2 text-sm" style={{ color: 'var(--color-text-secondary)' }}>
-            نام کاربری و رمز عبور خود را وارد کنید
+            شماره موبایل و کد ملی خود را وارد کنید
           </p>
         </div>
         <form className="space-y-6" onSubmit={handleSubmit}>
           <div>
-            <label htmlFor="username" className="block text-sm font-medium text-right" style={{ color: 'var(--color-text-secondary)' }}>
-              نام کاربری
+            <label htmlFor="mobile" className="block text-sm font-medium text-right" style={{ color: 'var(--color-text-secondary)' }}>
+              شماره موبایل
             </label>
             <input
-              id="username"
-              name="username"
-              type="text"
-              autoComplete="username"
+              id="mobile"
+              name="mobile"
+              type="tel"
+              autoComplete="tel"
               required
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              value={mobile}
+              onChange={(e) => setMobile(e.target.value)}
               className="mt-1 appearance-none block w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/30 sm:text-sm transition-all duration-200"
-              style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-background)', color: 'var(--color-text-primary)'}}
+              style={{ direction: 'ltr', borderColor: 'var(--color-border)', backgroundColor: 'var(--color-background)', color: 'var(--color-text-primary)'}}
             />
           </div>
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-right" style={{ color: 'var(--color-text-secondary)' }}>
-              رمز عبور
+            <label htmlFor="nationalId" className="block text-sm font-medium text-right" style={{ color: 'var(--color-text-secondary)' }}>
+              کد ملی (به عنوان رمز عبور)
             </label>
             <input
-              id="password"
-              name="password"
+              id="nationalId"
+              name="nationalId"
               type="password"
               autoComplete="current-password"
               required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={nationalId}
+              onChange={(e) => setNationalId(e.target.value)}
               className="mt-1 appearance-none block w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/30 sm:text-sm text-left transition-all duration-200"
               style={{ direction: 'ltr', borderColor: 'var(--color-border)', backgroundColor: 'var(--color-background)', color: 'var(--color-text-primary)'}}
             />

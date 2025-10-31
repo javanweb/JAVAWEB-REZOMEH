@@ -4,13 +4,13 @@ import { JavanWebiLogo, ArrowUturnLeftIcon } from './Icons';
 interface CtaLoginProps {
   onBack: () => void;
   onGoToRegister: () => void;
+  onLoginSuccess: () => void;
 }
 
-const CtaLogin: React.FC<CtaLoginProps> = ({ onBack, onGoToRegister }) => {
+const CtaLogin: React.FC<CtaLoginProps> = ({ onBack, onGoToRegister, onLoginSuccess }) => {
   const [nationalId, setNationalId] = useState('');
   const [mobile, setMobile] = useState('');
   const [error, setError] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
 
   const validateMobile = (mobile: string) => {
     return /^09\d{9}$/.test(mobile);
@@ -23,7 +23,6 @@ const CtaLogin: React.FC<CtaLoginProps> = ({ onBack, onGoToRegister }) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    setSuccessMessage('');
 
     if (!validateNationalId(nationalId)) {
         setError('کد ملی باید ۱۰ رقم باشد.');
@@ -35,15 +34,22 @@ const CtaLogin: React.FC<CtaLoginProps> = ({ onBack, onGoToRegister }) => {
       return;
     }
 
-    console.log(`Login attempt with National ID: ${nationalId}, Mobile: ${mobile}`);
-    setSuccessMessage('اطلاعات شما با موفقیت دریافت شد.');
-    
-    // Clear fields after a short delay
-    setTimeout(() => {
-        setNationalId('');
-        setMobile('');
-        setSuccessMessage('');
-    }, 3000);
+    const usersJSON = localStorage.getItem('users');
+    const users = usersJSON ? JSON.parse(usersJSON) : [];
+
+    const user = users.find((u: any) => u.mobile === mobile && u.password === nationalId);
+
+    if (user) {
+        localStorage.setItem('isLoggedIn', 'true');
+        localStorage.setItem('currentUser', JSON.stringify({
+            mobile: user.mobile,
+            firstName: user.firstName,
+            lastName: user.lastName
+        }));
+        onLoginSuccess();
+    } else {
+        setError('کاربری با این مشخصات یافت نشد. لطفاً ابتدا ثبت نام کنید.');
+    }
   };
 
   return (
@@ -101,9 +107,6 @@ const CtaLogin: React.FC<CtaLoginProps> = ({ onBack, onGoToRegister }) => {
 
           {error && (
             <p className="text-center text-sm text-red-600">{error}</p>
-          )}
-          {successMessage && (
-            <p className="text-center text-sm text-green-600">{successMessage}</p>
           )}
 
           <div>

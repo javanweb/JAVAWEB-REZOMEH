@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { SearchIcon, BellIcon, MenuIcon } from '../Icons';
 
 interface DashboardHeaderProps {
@@ -6,6 +6,20 @@ interface DashboardHeaderProps {
 }
 
 const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onMenuClick }) => {
+  // FIX: Added 'mobile' to the user state type to match the object stored in localStorage, resolving the property access error.
+  const [user, setUser] = useState<{firstName: string, lastName: string, mobile: string} | null>(null);
+
+  useEffect(() => {
+    const currentUserJSON = localStorage.getItem('currentUser');
+    if (currentUserJSON) {
+        try {
+            setUser(JSON.parse(currentUserJSON));
+        } catch(e) {
+            console.error("Failed to parse current user from localStorage", e);
+        }
+    }
+  }, []);
+
   return (
     <header className="bg-white shadow-sm border-b border-gray-200 h-20 flex items-center justify-between px-4 sm:px-6 flex-shrink-0">
       <div className="flex items-center gap-4">
@@ -30,12 +44,12 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onMenuClick }) => {
         </div>
         <div className="flex items-center gap-3">
           <img
-            src="https://i.pravatar.cc/40?u=admin"
+            src={`https://i.pravatar.cc/40?u=${user?.mobile || 'admin'}`}
             alt="User Avatar"
             className="w-10 h-10 rounded-full"
           />
           <div className="hidden sm:block">
-            <p className="font-semibold text-sm">مدير سيستم</p>
+            <p className="font-semibold text-sm">{user ? `${user.firstName} ${user.lastName}` : 'کاربر مهمان'}</p>
             <p className="text-xs text-gray-500">جوان وب ای</p>
           </div>
         </div>

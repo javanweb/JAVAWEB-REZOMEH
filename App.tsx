@@ -44,7 +44,7 @@ const App: React.FC = () => {
   const [view, setView] = useState<'homepage' | 'login' | 'dashboard' | 'registration' | 'otp_verification' | 'cta_login'>('homepage');
   const [siteContent, setSiteContent] = useState<SiteContent | null>(null);
   const [currentPage, setCurrentPage] = useState<NavLink | Sublink | null>(null);
-  const [registrationData, setRegistrationData] = useState<{ mobile: string } | null>(null);
+  const [registrationData, setRegistrationData] = useState<{ mobile: string; nationalId: string; firstName: string; lastName: string; } | null>(null);
 
   // Effect for preloader
   useEffect(() => {
@@ -193,12 +193,13 @@ const App: React.FC = () => {
     return <Registration 
               onRegisterSuccess={(data) => { setRegistrationData(data); setView('otp_verification'); }} 
               onBack={() => { setView('homepage'); goToHomepage(); }} 
-              onGoToLogin={() => setView('cta_login')}
+              onGoToLogin={() => setView('login')}
            />;
   }
 
   if (view === 'cta_login') {
     return <CtaLogin 
+              onLoginSuccess={() => setView('dashboard')}
               onBack={() => { setView('homepage'); goToHomepage(); }}
               onGoToRegister={() => setView('registration')}
            />;
@@ -208,8 +209,27 @@ const App: React.FC = () => {
     return <OtpVerification 
               mobile={registrationData.mobile} 
               onVerificationSuccess={() => { 
-                // Mock login after successful OTP
-                localStorage.setItem('isLoggedIn', 'true'); 
+                const usersJSON = localStorage.getItem('users');
+                const users = usersJSON ? JSON.parse(usersJSON) : [];
+                
+                const userExists = users.some((user: any) => user.mobile === registrationData.mobile);
+
+                if (!userExists) {
+                    users.push({
+                        mobile: registrationData.mobile,
+                        password: registrationData.nationalId, // Use national ID as password
+                        firstName: registrationData.firstName,
+                        lastName: registrationData.lastName
+                    });
+                    localStorage.setItem('users', JSON.stringify(users));
+                }
+
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('currentUser', JSON.stringify({
+                    mobile: registrationData.mobile,
+                    firstName: registrationData.firstName,
+                    lastName: registrationData.lastName
+                }));
                 setView('dashboard'); 
               }} 
               onBack={() => setView('registration')} 

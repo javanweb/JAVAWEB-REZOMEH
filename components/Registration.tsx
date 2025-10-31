@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { JavanWebiLogo, ArrowUturnLeftIcon } from './Icons';
 
 interface RegistrationProps {
-  onRegisterSuccess: (data: { mobile: string }) => void;
+  onRegisterSuccess: (data: { mobile: string; nationalId: string; firstName: string; lastName: string; }) => void;
   onBack: () => void;
   onGoToLogin: () => void;
 }
@@ -44,10 +44,8 @@ const Registration: React.FC<RegistrationProps> = ({ onRegisterSuccess, onBack, 
       return;
     }
 
-    // In a real app, you would probably check if the user exists, etc.
-    // For now, just simulate success and move to OTP verification.
-    console.log('Simulating sending OTP...');
-    onRegisterSuccess({ mobile });
+    // Pass all data to the next step for user creation
+    onRegisterSuccess({ mobile, nationalId, firstName, lastName });
   };
 
   return (
@@ -87,7 +85,7 @@ const Registration: React.FC<RegistrationProps> = ({ onRegisterSuccess, onBack, 
             </div>
           </div>
           <div>
-            <label htmlFor="nationalId" className="block text-sm font-medium text-right" style={{ color: 'var(--color-text-secondary)' }}>کد ملی</label>
+            <label htmlFor="nationalId" className="block text-sm font-medium text-right" style={{ color: 'var(--color-text-secondary)' }}>کد ملی (به عنوان رمز عبور)</label>
             <input id="nationalId" name="nationalId" type="text" maxLength={10} required value={nationalId} onChange={(e) => setNationalId(e.target.value.replace(/\D/g, ''))}
               className="mt-1 appearance-none block w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/30 sm:text-sm text-left transition-all duration-200"
               style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-background)', color: 'var(--color-text-primary)'}}
